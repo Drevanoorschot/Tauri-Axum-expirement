@@ -11,6 +11,50 @@
     <p>
         This page was generated on {{ gen_ts }}
     </p>
+
+    <button id="persist">persist</button><br>
+    <span id="persist_result"></span><br>
+
+    <button id="fetch">fetch</button><br>
+    <span id="fetch_result"></span><br>
+
+    <script>
+        window.onload = (_) => {
+            document.getElementById("persist").addEventListener("click", (_) => {
+                console.log("persist button clicked!")
+                let number = Math.floor(Math.random() * 10_000_000);
+                fetch("/persist", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        number: number
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                    .then((response) => response.json())
+                    .then((json) => {
+                        let number = json.persisted_number
+                        document.getElementById("persist_result").innerHTML = `persisted number ${number}`
+                    });
+            });
+            console.log("persist listener loaded!");
+
+            document.getElementById("fetch").addEventListener("click", (_) => {
+                console.log("fetch button clicked!")
+                fetch("/fetch", {
+                    method: "GET",
+                })
+                    .then((response) => response.json())
+                    .then((json) => {
+                        console.log(json.numbers);
+                        let numbers = json.numbers.map(n => `<li>${n}</li>`).join("")
+                        document.getElementById("fetch_result").innerHTML = `<ul>${numbers}</ul>`
+                    });
+            });
+            console.log("fetch listener loaded!");
+        };
+    </script>
 </body>
 
 </html>
